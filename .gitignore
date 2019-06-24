@@ -1,0 +1,4 @@
+*.pkl
+*.xls
+/20news-18828/*
+/pickle/*
