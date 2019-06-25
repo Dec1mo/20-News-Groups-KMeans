@@ -8,7 +8,6 @@ from sklearn.preprocessing import normalize
 
 #seeding
 def init_centers(X_data, k):
-	'''
 	distances = [[] for x in X_data]	
 	len_X_data = len(distances)
 	#Return k rows of X
@@ -39,6 +38,7 @@ def init_centers(X_data, k):
 	with open (r'./pickle/centers_sparse.pkl', 'rb') as file:
 		centers_sparse = pickle.load(file)
 	return centers_sparse
+	'''
 
 def assign_labels(X_data, centers):
 	D = euclidean_distances(X_data, centers)
@@ -62,7 +62,7 @@ def update_centers(X_data, labels, K):
 	return centers #center la 1 sparse matrix
 	
 def is_converged(centers, new_centers):
-	print ('shape of centers: {}, shape of new_centers: {}'.format (centers.get_shape(), new_centers.get_shape()))
+	# print ('shape of centers: {}, shape of new_centers: {}'.format (centers.get_shape(), new_centers.get_shape())) #(20, 109337)
 	sub_matrix = centers - new_centers
 	row_col = sub_matrix.nonzero()
 	if len(row_col[0]) != 0:
@@ -73,7 +73,7 @@ def non_lib_Kmeans(X_data, K):
 	centers = init_centers(X_data, K)
 	while True:
 		labels = assign_labels(X_data, centers)
-		print (len(labels))
+		#print (len(labels)) #18828
 		new_centers = update_centers(X_data, labels, K)
 		if is_converged(centers, new_centers):
 			break
@@ -82,29 +82,30 @@ def non_lib_Kmeans(X_data, K):
 		
 def main():
 	K = 20
+	with open (r'./pickle/y_test.pkl', 'rb') as file:
+		y_test = pickle.load(file)
 	'''
+	with open (r'./pickle/X_data.pkl', 'rb') as file:
+		X_data = pickle.load(file)
+	# Library-based
 	library_kmeans = KMeans(n_clusters=K, random_state=0).fit(X_data)
 	with open(r'./pickle/library_kmeans.pkl', 'wb') as file:
 		pickle.dump(library_kmeans, file)
-	non_lib_centers, non_lib_labels = non_lib_Kmeans(X_data, K)
 	
+	# Non-library-based
+	non_lib_centers, non_lib_labels = non_lib_Kmeans(X_data, K)
 	with open(r'./pickle/non_lib_centers.pkl', 'wb') as file:
 		pickle.dump(non_lib_centers, file)
 	with open(r'./pickle/non_lib_labels.pkl', 'wb') as file:
 		pickle.dump(non_lib_labels, file)
 	'''
-	print ('Loading pickle files')
-	with open (r'./pickle/X_data.pkl', 'rb') as file:
-		X_data = pickle.load(file)
-	with open (r'./pickle/y_test.pkl', 'rb') as file:
-		y_test = pickle.load(file)
+	
 	with open (r'./pickle/library_kmeans.pkl', 'rb') as file:
 		library_kmeans = pickle.load(file)
 	with open (r'./pickle/non_lib_centers.pkl', 'rb') as file:
 		non_lib_centers = pickle.load(file)
 	with open (r'./pickle/non_lib_labels.pkl', 'rb') as file:
 		non_lib_labels = pickle.load(file)
-	print ('Loaded pickle files')
 	
 	print ("Library-based Kmeans model's centers:")
 	print (library_kmeans.cluster_centers_)
@@ -114,17 +115,12 @@ def main():
 	#print (non_lib_centers.get_shape())
 	lib_com_acc = completeness_score(y_test, library_kmeans.labels_)
 	lib_hom_acc = homogeneity_score(y_test, library_kmeans.labels_)
-	print ('Completeness accurancy of library-based Kmeans model = %.2f%%' %  (lib_com_acc*100)) #48.99%
-	print ('Homogeneity accurancy of library-based Kmeans model = %.2f%%' %  (lib_hom_acc*100)) #38.55%
-	pred_label = library_kmeans.predict(X_data)
-	lib_com_acc = completeness_score(y_test, pred_label)
-	lib_hom_acc = homogeneity_score(y_test, pred_label)
-	print ('Completeness accurancy of library-based Kmeans model = %.2f%%' %  (lib_com_acc*100)) #48.99%
-	print ('Homogeneity accurancy of library-based Kmeans model = %.2f%%' %  (lib_hom_acc*100)) #38.55%
+	print ('Completeness accurancy of library-based Kmeans model = %.2f%%' %  (lib_com_acc*100)) # 53.55%
+	print ('Homogeneity accurancy of library-based Kmeans model = %.2f%%' %  (lib_hom_acc*100)) # 43.68%
 	non_lib_com_acc = completeness_score(y_test, non_lib_labels)
 	non_lib_hom_acc = homogeneity_score(y_test, non_lib_labels)
-	print ('Completeness accurancy of non-library-based Kmeans model = %.2f%%' %  (non_lib_com_acc*100)) #54.07%
-	print ('Homogeneity accurancy of non-library-based Kmeans model = %.2f%%' %  (non_lib_hom_acc*100)) #52.38%
+	print ('Completeness accurancy of non-library-based Kmeans model = %.2f%%' %  (non_lib_com_acc*100)) # 58.84%
+	print ('Homogeneity accurancy of non-library-based Kmeans model = %.2f%%' %  (non_lib_hom_acc*100)) # 57.03%
 	
 	
 	

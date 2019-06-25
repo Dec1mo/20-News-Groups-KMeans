@@ -25,15 +25,13 @@ def clean_data(list_of_text):
 		'''
 		#Convert all text to lower cases:
 		data = data.lower()
+		#Remove all non characters a-z and A-Z
+		data = re.sub(r'([^a-zA-Z\s]+)', " ", data)
 		#Normalize appos and lemmatize words:
 		words = data.split()
 		data = [appos[word] if word in appos else lemmatizer.lemmatize(word) for word in words]
 		data = [word for word in data if word not in set_stopwords and len(word) >= 2]
 		data = " ".join(data)
-		#Remove all non characters a-z and A-Z
-		data = re.sub(r'([^a-zA-z\s]+)', " ", data)
-		#Remove NEL
-		#data = data.replace(u'\x85', u'\n')
 		new_list_of_text.append(data)
 	print ('Done cleaning')
 	return new_list_of_text
