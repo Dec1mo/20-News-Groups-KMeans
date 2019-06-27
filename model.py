@@ -1,5 +1,5 @@
 import pickle
-from sklearn.metrics import completeness_score, homogeneity_score
+from sklearn.metrics import completeness_score, homogeneity_score, v_measure_score
 from sklearn.cluster import KMeans
 import numpy
 from sklearn.metrics.pairwise import euclidean_distances
@@ -102,25 +102,30 @@ def main():
 	
 	with open (r'./pickle/library_kmeans.pkl', 'rb') as file:
 		library_kmeans = pickle.load(file)
-	with open (r'./pickle/non_lib_centers.pkl', 'rb') as file:
-		non_lib_centers = pickle.load(file)
 	with open (r'./pickle/non_lib_labels.pkl', 'rb') as file:
 		non_lib_labels = pickle.load(file)
-	
+	'''
+	with open (r'./pickle/non_lib_centers.pkl', 'rb') as file:
+		non_lib_centers = pickle.load(file)
 	print ("Library-based Kmeans model's centers:")
 	print (library_kmeans.cluster_centers_)
 	#print ('{} x {}'.format(len(library_kmeans.cluster_centers_), len(library_kmeans.cluster_centers_[0])))
 	print ("Non-library-based Kmeans model's centers:")
 	print (non_lib_centers)
 	#print (non_lib_centers.get_shape())
+	'''
 	lib_com_acc = completeness_score(y_test, library_kmeans.labels_)
 	lib_hom_acc = homogeneity_score(y_test, library_kmeans.labels_)
+	lib_vme_acc = v_measure_score(y_test, library_kmeans.labels_)
 	print ('Completeness accurancy of library-based Kmeans model = %.2f%%' %  (lib_com_acc*100)) # 53.55%
 	print ('Homogeneity accurancy of library-based Kmeans model = %.2f%%' %  (lib_hom_acc*100)) # 43.68%
+	print ('V-measure accurancy of library-based Kmeans model = %.2f%%' %  (lib_vme_acc*100)) # 48.11%
 	non_lib_com_acc = completeness_score(y_test, non_lib_labels)
 	non_lib_hom_acc = homogeneity_score(y_test, non_lib_labels)
+	non_lib_vme_acc = v_measure_score(y_test, non_lib_labels)
 	print ('Completeness accurancy of non-library-based Kmeans model = %.2f%%' %  (non_lib_com_acc*100)) # 58.84%
 	print ('Homogeneity accurancy of non-library-based Kmeans model = %.2f%%' %  (non_lib_hom_acc*100)) # 57.03%
+	print ('V-measure accurancy of non-library-based Kmeans model = %.2f%%' %  (non_lib_vme_acc*100)) # 57.92%
 	
 	
 	
